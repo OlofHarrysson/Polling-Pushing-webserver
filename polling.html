@@ -9,11 +9,8 @@ function poll(){
           type: "GET",
           url: "http://localhost:8888/messages/"
         }).done(function(msg){
-          if (msg !== 'Empty') {
-            console.log(msg)
+          if (msg !== 'No new nessage') {
             var json = JSON.parse(msg)
-            console.log(json)
-            console.log(json.data)
             $('#list').prepend($('<li>').append(JSON.stringify(json.data)));
           }
           poll();

@@ -1,10 +1,10 @@
 var http = require("http");
-var qs = require('querystring');
 
 var message = undefined
 var new_data = false
 
 http.createServer(function(req, res) {
+  console.log("Polling Server")
   if (req.method === 'OPTIONS') { // For preflight requests
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -18,7 +18,7 @@ http.createServer(function(req, res) {
       var json = JSON.stringify(message);
       res.end(json)
     }
-    res.end('Empty')
+    res.end('No new nessage')
   }
   else if (req.method === 'POST' && req.url === '/messages/') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,14 +28,9 @@ http.createServer(function(req, res) {
       body += chunk;
     });
     req.on('end', function() {
-      var post_data = qs.parse(body);
-      // now you can access `data.email` and `data.password`
-      time = Date.now()
+      var post_data = JSON.parse(body);
       new_data = true
-      console.log(post_data)
-      console.log(post_data.message)
-      console.log(typeof(post_data))
-      message = {timestamp: time, data: post_data}
+      message = {timestamp: Date.now(), data: post_data.message}
 
       res.writeHead(200);
       res.end(JSON.stringify(post_data));
