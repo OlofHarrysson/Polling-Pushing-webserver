@@ -9,9 +9,10 @@ function poll(){
           type: "GET",
           url: "http://localhost:8888/messages/"
         }).done(function(msg){
-          if (msg !== 'No new nessage') {
-            var json = JSON.parse(msg)
-            $('#list').prepend($('<li>').append(JSON.stringify(json.data)));
+          $("ul").empty();
+          var messages = JSON.parse(msg)
+          for (var j = 0; j < messages.length; j++){
+            $('#list').prepend($('<li>').append(JSON.stringify(messages[j].data)));
           }
           poll();
         });

@@ -7,13 +7,25 @@ function poll(){
     $.ajax({
       type: "GET",
       url: "http://localhost:8888/messages/"
-    }).done(function(msg){});
+    }).done(function(msg){
+      console.log(msg)
+      $("ul").empty();
+      var messages = JSON.parse(msg)
+      for (var j = 0; j < messages.length; j++){
+        $('#list').prepend($('<li>').append(JSON.stringify(messages[j].data)));
+      }
+    });
 };
 $(document).ready(function(){
     poll();
     $("#button" ).click(function() {
           $.post('http://localhost:8888/messages/', JSON.stringify({ message: $("#message").val()}), function(response) {
-            $('#list').prepend($('<li>').append(JSON.stringify(response.data)));
+            // $("ul").empty();
+            // for (var j = 0; j < response.length; j++){
+            //   $('#list').prepend($('<li>').append(JSON.stringify(response[j].data)));
+            // }
+            // $('#list').prepend($('<li>').append(JSON.stringify(response.data)));
+            console.log('Imhere')
             poll();
           }, 'json');
     });

@@ -1,7 +1,12 @@
 var http = require("http");
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 
-var message = undefined
-var new_data = false
+// var sendMessage = function sendMessage(res) {
+//   console.log("SEND MESSAGES")
+// }
+
+var messages = []
 
 http.createServer(function(req, res) {
   if (req.method === 'OPTIONS') { // For preflight requests
@@ -14,6 +19,12 @@ http.createServer(function(req, res) {
     res.writeHead(200, {"Content-Type":"text/event-stream", "Cache-Control":"no-cache", "Connection":"keep-alive"});
 
     console.log("Get Request");
+    eventEmitter.on('newMessage', function() {
+      console.log("SEND MESSAGES")
+      console.log(res)
+      var json = JSON.stringify(messages);
+      res.end(json)
+    });
 
   }
   else if (req.method === 'POST' && req.url === '/messages/') {
@@ -26,11 +37,13 @@ http.createServer(function(req, res) {
     });
     req.on('end', function() {
       var post_data = JSON.parse(body);
-      new_data = true
-      message = {timestamp: Date.now(), data: post_data.message}
+      messages.push({timestamp: Date.now(), data: post_data.message})
+
+      eventEmitter.emit('newMessage', value)
 
       res.writeHead(200);
-      res.end(JSON.stringify(message));
+      // res.end(JSON.stringify(messages));
+      res.end();
     });
   } else {
     res.writeHead(404);
@@ -39,10 +52,3 @@ http.createServer(function(req, res) {
 
 
 }).listen(8888, 'localhost');
-
-
-function checkNewData(res) {
-  setTimeout(function(){
-
-  }, 10000);
-}
